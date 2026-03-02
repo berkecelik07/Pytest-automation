@@ -1,0 +1,37 @@
+# CODEOWNERS file
+# This file defines which users or teams are responsible for code in this repository
+# GitHub requires approvals from code owners for pull requests that modify these files
+# GitHub documentation: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global code owner - responsible for the entire repository
+* @berkecelik07
+
+# Configuration files
+*.yml @berkecelik07
+*.yaml @berkecelik07
+pytest.ini @berkecelik07
+pyproject.toml @berkecelik07
+setup.py @berkecelik07
+requirements.txt @berkecelik07
+tox.ini @berkecelik07
+.editorconfig @berkecelik07
+
+# GitHub workflows
+.github/ @berkecelik07
+
+# Configuration module
+config/ @berkecelik07
+
+# Page objects
+pages/ @berkecelik07
+
+# BDD features and steps
+features/ @berkecelik07
+steps/ @berkecelik07
+
+# Tests
+tests/ @berkecelik07
+
+# Documentation
+*.md @berkecelik07
+CONTRIBUTING.md @berkecelik07
