@@ -1,0 +1,75 @@
+name: Test Automation Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * *'  # Run daily at 2 AM UTC
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install -e ".[dev]"
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium firefox webkit
+          playwright install-deps chromium firefox webkit
+
+      - name: Create reports directory
+        run: |
+          mkdir -p reports/allure-results
+          mkdir -p reports/screenshots
+
+      - name: Run tests
+        run: |
+          pytest tests/features --format=progress -n auto --tb=short
+        continue-on-error: true
+        env:
+          ENVIRONMENT: dev
+          HEADLESS: true
+          BROWSER: chromium
+
+      - name: Generate Allure Report
+        if: always()
+        uses: simple-elf/allure-report-action@master
+        with:
+          allure_results: reports/allure-results
+          gh_pages: gh-pages
+          allure_history: allure-history
+
+      - name: Upload test results as artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            reports/allure-results
+            reports/screenshots
+
+      - name: Deploy Allure Report to GitHub Pages
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/deploy-pages@v2
+        with:
+          folder: allure-report
