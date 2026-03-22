@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "test-automation-framework"
+version = "1.0.0"
+description = "Production-ready test automation framework using Pytest, Playwright, and BDD"
+requires-python = ">=3.11"
+authors = [
+    {name = "QA Team", email = "qa@example.com"}
+]
+dependencies = [
+    "pytest==7.4.3",
+    "pytest-asyncio==0.21.1",
+    "pytest-bdd==6.1.1",
+    "pytest-xdist==3.5.0",
+    "allure-pytest==2.13.2",
+    "playwright==1.40.0",
+    "python-dotenv==1.0.0",
+    "pydantic==2.5.0",
+    "pydantic-settings==2.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black==23.12.1",
+    "ruff==0.1.8",
+    "pre-commit==3.5.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+pythonpath = ["."]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+markers = [
+    "smoke: mark test as smoke test",
+    "regression: mark test as regression test",
+    "ui: mark test as UI test",
+]
+addopts = """
+    -v
+    --strict-markers
+    --tb=short
+    --alluredir=reports/allure-results
+    """
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+extend-exclude = '''
+/(
+  | \.git
+  | \.venv
+  | venv
+  | env
+  | __pycache__
+  | dist
+  | build
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "env",
+    ".pytest_cache",
+    ".mypy_cache",
+]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "C",    # flake8-comprehensions
+    "B",    # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long; handled by black
+]
+
+[tool.ruff.isort]
+known-first-party = ["config", "pages", "steps", "utils"]
+lines-after-imports = 2
+
+[tool.pytest-bdd]
+steps_dir = "steps"
+features_dir = "features"
